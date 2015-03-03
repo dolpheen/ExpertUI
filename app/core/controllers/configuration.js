@@ -403,6 +403,8 @@ appController.controller('ConfigConfigurationController', function($scope, $rout
         }
         var data = $('#' + form).serializeArray();
         var dataValues = [];
+        var request = '';
+        
         angular.forEach(data, function(v, k) {
             if (v.value !== '') {
                 dataValues.push({"value": v.value, "name": v.name});
@@ -443,10 +445,17 @@ appController.controller('ConfigConfigurationController', function($scope, $rout
             obj['command'] = cmd['command'];
             obj['parameter'] = parameter;
             xmlData.push(obj);
+
+            request = 'devices[' + obj.id + '].instances[' + obj.instance +'].commandClasses[0x'+ obj.commandclass +'].' + obj.command + obj.parameter.replace('[', '(').replace(']',')');
+            if(obj.commandclass !== '84') dataService.runCmd(request, false, $scope._t('error_handling_data'));
             // dataService.runCmd(request, false, $scope._t('error_handling_data'));
         });
         //console.log(xmlData)
         //return;
+        if(cmd.commandclass === '84' && cmd.command == 'Set') {
+            request = cfg.cmd + '.Set(' + cfg.configCconfigValue + ',' + cfg.configCconfigNodeValue + ')';    
+            dataService.runCmd(request, false, $scope._t('error_handling_data'));   
+        }
 
         dataService.getCfgXml(function(cfgXml) {
             var xmlFile = deviceService.buildCfgXml(xmlData, cfgXml, cmd['id'], cmd['commandclass']);
