@@ -65,7 +65,8 @@
 
                                 <select ng-model="assocToInstance" class="form-control">
                                     <option value="" ng-hide_="(removeInstances[assocToNode] | getObjectLength) == 1">&lt; {{ _t('assoc_select_to_instance')}} &gt;</option>
-                                    <option ng-repeat="(k,v) in removeInstances[assocToNode]" value="{{k}}" ng-init="assocToInstance = (removeInstances[assocToNode] | getObjectLength) == 1 ? (removeInstances[assocToNode] | getFirstObjectKey) : ''" ng-selected="k == assocToInstance">{{v}}</option>
+                                    <option ng-repeat="(k,v) in removeInstances[assocToNode]" value="{{k}}"     ng-selected="k == assocToInstance">{{v}}</option>
+                                    <!-- <option ng-repeat="(k,v) in removeInstances[assocToNode]" value="{{k}}" ng-init="assocToInstance = (removeInstances[assocToNode] | getObjectLength) == 1 ? (removeInstances[assocToNode] | getFirstObjectKey) : ''" ng-selected="k == assocToInstance">{{v}}</option> -->
                                 </select>
                             </div>
                         </div>
@@ -94,7 +95,7 @@
                                </select>-->
                                 <select ng-model="assocToNode" class="form-control">
                                     <option value=""  ng-selected="true">&lt; {{ _t('assoc_select_to_node')}} &gt;</option>
-                                    <option ng-repeat="v in addDevices" value="{{v.key}}">{{v.val}}</option>
+                                    <option ng-repeat="v in addNodesSort" value="{{v.key}}">{{v.val}}</option>
                                 </select>
                             </div>
                             <div class="form-group" ng-show="addInstances[assocToNode] != undefined">

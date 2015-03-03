@@ -638,7 +638,7 @@ appController.controller('ConfigAssociationController', function($scope, $filter
         $scope.removeNodesSort = {};
         $scope.removeInstances = {};
         //$scope.assocToNode = '';
-        //$scope.assocToInstance = '';
+        $scope.assocToInstance = null;
         $scope.removeNodesLength = $scope.removeData.nodeIds;
         $scope.removeInstancesLength = [];
         var cnt = 0;
@@ -658,8 +658,7 @@ appController.controller('ConfigAssociationController', function($scope, $filter
                 if (!(nodeId in $scope.removeInstances))
                     $scope.removeInstances[nodeId] = {};
                 $scope.removeInstances[nodeId][instanceId] = instanceId + 1;
-
-
+                $scope.assocToInstance = '';
 
             } else {
                 // simple Assocation
@@ -684,7 +683,7 @@ appController.controller('ConfigAssociationController', function($scope, $filter
     $scope.remove = function() {
         var params = $scope.removeData.groupId + ',' + $scope.assocToNode;
 
-        if ($scope.assocToInstance) {
+        if ( !isNaN(parseInt($scope.assocToInstance)) ) {
             params += ',' + (parseInt($scope.assocToInstance) + 1);
         }
 
@@ -696,7 +695,7 @@ appController.controller('ConfigAssociationController', function($scope, $filter
             return;
         var index = $scope.removeData.instance;
         var group = parseInt($scope.removeData.groupId);
-        if ($scope.assocToInstance == null) {
+        if ( isNaN(parseInt($scope.assocToInstance)) ) {
             $scope.updates.push("devices." + nodeId + ".instances." + index + ".commandClasses." + (0x85) + ".data." + group);
             $scope.applyQueue.push('devices[' + nodeId + '].instances[' + index + '].commandClasses[0x85].Remove(' + params + ')');
         } else {
@@ -729,8 +728,8 @@ appController.controller('ConfigAssociationController', function($scope, $filter
         var params = $scope.addData.groupId + ',' + $scope.assocToNode;
         var parameter = $scope.assocToNode;
         if ($scope.assocToInstance != null) {
-            params += ',' + (parseInt($scope.assocToInstance) + 1);
-            parameter += ',' + (parseInt($scope.assocToInstance) + 1);
+            params += ',' + (parseInt($scope.assocToInstance) );
+            parameter += ',' + (parseInt($scope.assocToInstance) );
         }
         var nodeId = $scope.deviceId;
         var node = $scope.ZWaveAPIData.devices[nodeId];
@@ -762,12 +761,12 @@ appController.controller('ConfigAssociationController', function($scope, $filter
         // cause view to show element
         $scope.addData.nodeIds.push(parseInt($scope.assocToNode));
         if ($scope.assocToInstance != null)
-            $scope.addData.instanceIds.push(parseInt($scope.assocToInstance) + 1);
+            $scope.addData.instanceIds.push(parseInt($scope.assocToInstance) );
         else
             $scope.addData.instanceIds.push(null);
         $scope.addData.persistent.push("notInZWave");
         if ($scope.assocToInstance != null)
-            $scope.addData.tooltips.push($scope._t('instance') + " " + ($scope.assocToInstance + 1) + " " + $scope._t('of') + " " + $filter('deviceName')($scope.assocToNode, $scope.ZWaveAPIData.devices[$scope.assocToNode]));
+            $scope.addData.tooltips.push($scope._t('instance') + " " + $scope.assocToInstance  + " " + $scope._t('of') + " " + $filter('deviceName')($scope.assocToNode, $scope.ZWaveAPIData.devices[$scope.assocToNode]));
         else
             $scope.addData.tooltips.push($filter('deviceName')($scope.assocToNode, $scope.ZWaveAPIData.devices[$scope.assocToNode]));
         $('#modal_add').modal('hide');
@@ -780,7 +779,6 @@ appController.controller('ConfigAssociationController', function($scope, $filter
         $scope.addNodesSort = {};
         $scope.addInstances = {};
         $scope.assocToNode = '';
-        $scope.assocToNode = null;
         $scope.assocToInstance = null;
         // Prepare devices and nodes
         angular.forEach($scope.ZWaveAPIData.devices, function(node, nodeId) {
@@ -826,7 +824,7 @@ appController.controller('ConfigAssociationController', function($scope, $filter
                     if (contained)
                         continue;
                     if (0 in node.instances) {
-                        if ((0x8e in $scope.addData.node.instances[0].commandClasses) && (0x8e in node.instances[0].commandClasses)) {
+                        if ((0x8e in $scope.addData.node.instances[0].commandClasses) && (0x8e in node.instances[0].commandClasses) && Object.keys(node.instances).length > 1) {
                             // MultiChannelAssociation with instanceId
                             $scope.addNodes[nodeId] = '(#' + nodeId + ') ' + $filter('deviceName')(nodeId, node);
                             $scope.addNodesSort[nodeId] = {
@@ -835,7 +833,7 @@ appController.controller('ConfigAssociationController', function($scope, $filter
                             };
                             if (!(nodeId in $scope.addInstances))
                                 $scope.addInstances[nodeId] = {};
-                            $scope.addInstances[nodeId][instanceId] = parseInt(instanceId) + 1;
+                            $scope.addInstances[nodeId][instanceId] = parseInt(instanceId);
                         } else {
                             // simple Assocation
                             $scope.addNodes[nodeId] = '(#' + nodeId + ') ' + $filter('deviceName')(nodeId, node);
